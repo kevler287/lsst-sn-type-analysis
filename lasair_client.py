@@ -43,11 +43,43 @@ class LasairClient:
             'requestType': request_type
         }
         
-        response = requests.get(endpoint, params=params, headers=self.headers)
+        return self._make_request("GET", endpoint, params=params)
         
-        if response.status_code == 200:
-            return response.json()
-        elif response.status_code == 401:
-            raise Exception("Unauthorized: Check if your token is valid and active.")
-        else:
-            raise Exception(f"API Error {response.status_code}: {response.text}")
+    def query(self, selected, tables, conditions):
+        """
+        Runs a SQL-like query on the Lasair database.
+        
+        Args:
+            selected (str): The columns to return (e.g., "objectId, ra, dec").
+            tables (str): The table to query (usually "objects").
+            conditions (str): The WHERE clause (e.g., "magpsf < 18 AND nethist > 10").
+            
+        Returns:
+            list: List of dictionaries containing the query results.
+        """
+        endpoint = f"{self.base_url}/query/"
+        # Wir nutzen hier POST, da SQL-Queries oft Sonderzeichen und Überlänge haben
+        data = {
+            'selected': selected,
+            'tables': tables,
+            'conditions': conditions
+        }
+        return self._make_request("POST", endpoint, data=data)
+
+    def _make_request(self, method, url, params=None, data=None):
+        """Internal helper to handle requests and errors."""
+        try:
+            if method == "GET":
+                response = requests.get(url, params=params, headers=self.headers, timeout=30)
+            else:
+                # Bei POST senden wir die Daten als Form-Data, wie von Lasair erwartet
+                response = requests.post(url, data=data, headers=self.headers, timeout=30)
+            
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 401:
+                raise Exception("Unauthorized: Check your API token.")
+            else:
+                raise Exception(f"API Error {response.status_code}: {response.text}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Connection Error: {e}")
