@@ -45,7 +45,7 @@ class LasairClient:
         
         return self._make_request("GET", endpoint, params=params)
         
-    def query(self, selected, tables, conditions):
+    def query(self, selected, tables, conditions, limit=1000, offset=0):
         """
         Runs a SQL-like query on the Lasair database.
         
@@ -61,7 +61,9 @@ class LasairClient:
         data = {
             'selected': selected,
             'tables': tables,
-            'conditions': conditions
+            'conditions': conditions,
+            'limit': limit,
+            'offset': offset
         }
         return self._make_request("POST", endpoint, data=data)
     
