@@ -1,0 +1,13 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server
+    container_name: mongodb
+    ports:
+      - 27018:27018
+    volumes:
+      - sn_sources:/data/db
+    restart: unless-stopped
+
+volumes:
+  sn_sources:
+    driver: local

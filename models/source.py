@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class DiaSource(BaseModel):
-    diaSourceId: int
+    diaSourceId: int = Field(description="diaSourceId or diaForcedSourceId")
     isForced: bool = Field(description="Whether this source was detected automatically or forced at a known position")
     midpointMjdTai: float = Field(description="Effective mid-visit time for this diaSource, expressed as Modified Julian Date, International Atomic Time")
     ra: float
@@ -51,8 +51,6 @@ class DiaSource(BaseModel):
     dipoleMeanFluxErr: Optional[float] = None
     dipoleNdata: Optional[int] = None
 
-    extendedness: Optional[float] = Field(default=None, description="0 means perfect point shaped object, 1 mean extended e.g. galaxy")
-
     # Forced PSF flux flags: Unlike normal detection where the algorithm searches for sources
     # automatically, forced PSF photometry fits the PSF at a fixed, pre-known position regardless
     # of whether a source is visibly detected there. This is critical for building complete light
@@ -62,41 +60,50 @@ class DiaSource(BaseModel):
     forced_PsfFlux_flag_edge: Optional[bool] = Field(default=None, description="Indicates if object is to close to the edge")
     forced_PsfFlux_flag_noGoodPixels: Optional[bool] = Field(default=None, description="Indicates if object is masked")
 
-    glint_trail: Optional[bool] = None
-    isDipole: Optional[bool] = None
-    isNegative: Optional[bool] = None
+    glint_trail: Optional[bool] = Field(default=None, description="Indicates if optical noise is present in the image")
+    isDipole: Optional[bool] = Field(default=None, description="Indicates if alignment failed. see above")
+    isNegative: Optional[bool] = Field(default=None, description="Indicates if template image was lighter than science image")
 
-    # Shape moments
-    ixx: Optional[float] = None
-    ixxPSF: Optional[float] = None
-    ixy: Optional[float] = None
-    ixyPSF: Optional[float] = None
-    iyy: Optional[float] = None
-    iyyPSF: Optional[float] = None
+    # Shape moments: Second-order moments describing the source's light distribution as an
+    # ellipse. ixx/iyy capture the extent along x/y, ixy the diagonal covariance (tilt).
+    # Like a fisheye lens, the telescope's optics distort point sources depending on their
+    # position on the detector — a point source in the corner looks different than one in
+    # the center. The PSF variants (ixxPSF, iyyPSF, ixyPSF) capture exactly this expected
+    # distortion at the source's specific detector position, serving as a reference for what
+    # a perfect point source should look like there. Neither the source moments nor the PSF
+    # moments are meaningful in isolation — only their ratio reveals the true shape of the
+    # source, which is summarized by the extendedness parameter (0 = point-like SN, 1 = galaxy).
+    ixx: Optional[float] = Field(default=None, description="Extension along x axis")
+    ixy: Optional[float] = Field(default=None, description="Diagonal extension")
+    iyy: Optional[float] = Field(default=None, description="Extension along y axis")
+    ixxPSF: Optional[float] = Field(default=None, description="Expected extension along x axis")
+    ixyPSF: Optional[float] = Field(default=None, description="Expected diagonal extension")
+    iyyPSF: Optional[float] = Field(default=None, description="Expected extension along y axis")
+    extendedness: Optional[float] = Field(default=None, description="= f(ixx/ixxPSF, iyy/iyyPSF, ixy/ixyPSF)")
 
-    parentDiaSourceId: Optional[int] = None
+    parentDiaSourceId: Optional[int] = Field(default=None, description="If two sources are detected as one and split later, this field links them")
 
-    # Pixel flags
-    pixelFlags: Optional[bool] = None
-    pixelFlags_bad: Optional[bool] = None
-    pixelFlags_cr: Optional[bool] = None
-    pixelFlags_crCenter: Optional[bool] = None
-    pixelFlags_edge: Optional[bool] = None
-    pixelFlags_injected: Optional[bool] = None
+    # Pixel flags indicate problematic pixels
+    pixelFlags: Optional[bool] = Field(default=None, description="overall flag")
+    pixelFlags_bad: Optional[bool] = Field(default=None, description="permanent defect pixels (hardware issue)")
+    pixelFlags_cr: Optional[bool] = Field(default=None, description="cosmic ray can cause pixels to appear like point sources")
+    pixelFlags_crCenter: Optional[bool] = Field(default=None, description="cosmic ray can cause pixels to appear like point sources in center")
+    pixelFlags_edge: Optional[bool] = Field(default=None, description="source to close to the detector edge")
+    pixelFlags_injected: Optional[bool] = Field(default=None, description="indicates atrificial injection of a source. if set ignore for SN foreshadowing")
     pixelFlags_injectedCenter: Optional[bool] = None
-    pixelFlags_injected_template: Optional[bool] = None
+    pixelFlags_injected_template: Optional[bool] = Field(default=None, description="indicates atrificial injection of a source in template. if set ignore for SN foreshadowing")
     pixelFlags_injected_templateCenter: Optional[bool] = None
-    pixelFlags_interpolated: Optional[bool] = None
-    pixelFlags_interpolatedCenter: Optional[bool] = None
-    pixelFlags_nodata: Optional[bool] = None
-    pixelFlags_nodataCenter: Optional[bool] = None
-    pixelFlags_offimage: Optional[bool] = None
-    pixelFlags_saturated: Optional[bool] = None
-    pixelFlags_saturatedCenter: Optional[bool] = None
-    pixelFlags_streak: Optional[bool] = None
-    pixelFlags_streakCenter: Optional[bool] = None
-    pixelFlags_suspect: Optional[bool] = None
-    pixelFlags_suspectCenter: Optional[bool] = None
+    pixelFlags_interpolated: Optional[bool] = Field(default=None, description="defected pixel was reconstructed")
+    pixelFlags_interpolatedCenter: Optional[bool] = Field(default=None, description="defected pixel was reconstructed in center")
+    pixelFlags_nodata: Optional[bool] = Field(default=None, description="no data")
+    pixelFlags_nodataCenter: Optional[bool] = Field(default=None, description="no data in center")
+    pixelFlags_offimage: Optional[bool] = Field(default=None, description="source is cutoff")
+    pixelFlags_saturated: Optional[bool] = Field(default=None, description="pixel was saturated. real flux is higher")
+    pixelFlags_saturatedCenter: Optional[bool] = Field(default=None, description="pixel was saturated in center. real flux is higher")
+    pixelFlags_streak: Optional[bool] = Field(default=None, description="some satellite trail is visible in the image")
+    pixelFlags_streakCenter: Optional[bool] = Field(default=None, description="some satellite trail is visible in the center of image")
+    pixelFlags_suspect: Optional[bool] = Field(default=None, description="pixel is close to be saturated. not reliable")
+    pixelFlags_suspectCenter: Optional[bool] = Field(default=None, description="pixel in center is close to be saturated. not reliable")
 
     # PSF flux
     psfChi2: Optional[float] = None

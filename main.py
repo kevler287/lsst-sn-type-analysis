@@ -1,7 +1,6 @@
 import os
-import plotter
-from models.sn_object import SuperNovaDiaObject, DiaSource
-from lasair_client import LasairClient
+from models.sn_object import SuperNovaDiaObject
+from api.lasair_client import LasairClient
 import dotenv
 
 dotenv.load_dotenv()
