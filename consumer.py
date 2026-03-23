@@ -1,28 +1,88 @@
-import os
+import time
 import requests
-from models.sn_object import SuperNovaDiaObject
-from api.lasair_client import LasairClient
-from api.mongo_client import SuperNovaMongoClient
+import os
 import dotenv
+from api.lasair_client import LasairClient
+from api.mongo_client import LSSTMongoClient
+from models.dia_object import DiaObject
 
 dotenv.load_dotenv()
-
 token = os.environ.get('LASAIR_API_TOKEN')
 L = LasairClient(token=token)
-M = SuperNovaMongoClient(uri="mongodb://localhost:27017", db_name="lsst")
+M = LSSTMongoClient(uri="mongodb://localhost:27017", db_name="lsst")
 
-sn_ids = L.query(selected='sherlock_classifications.diaObjectId', tables='sherlock_classifications', conditions='classification LIKE "SN"')
-for sn_id in sn_ids:
-    sn_id = sn_id['diaObjectId']
+def fetch_all_sn_ids():
+    all_ids = []
+    offset = 0
+    limit = 1000
+    while True:
+        try:
+            batch = L.query(
+                selected='sherlock_classifications.diaObjectId',
+                tables='sherlock_classifications',
+                conditions='classification LIKE "SN"',
+                limit=limit,
+                offset=offset
+            )
+            if not batch:
+                break
+            all_ids.extend([r['diaObjectId'] for r in batch])
+            print(f"Fetched {len(all_ids)} IDs so far...")
+            if len(batch) < limit:
+                break
+            offset += limit
+        except Exception as e:
+            if "API Error 429" in str(e):
+                print(f"  → rate limit hit, retrying in 50 minutes...")
+                time.sleep(3000)
+            else:
+                raise
+        except requests.exceptions.Timeout:
+            print(f"  → timeout, retrying in 5 minutes...")
+            time.sleep(300)
+
+    return all_ids
+
+def fetch_object_with_retry(sn_id):
+    while True:
+        try:
+            result = L.get_object(object_id=sn_id, lasair_added=True)
+            return result
+        except Exception as e:
+            if "API Error 429" in str(e):
+                print(f"  → rate limit hit, retrying in 50 minutes...")
+                time.sleep(3000)
+            else:
+                raise
+        except requests.exceptions.Timeout:
+            print(f"  → timeout, retrying in 5 minutes...")
+            time.sleep(300)
+
+print("Fetching all SN IDs...")
+sn_ids = fetch_all_sn_ids()
+total = len(sn_ids)
+print(f"Total SN IDs: {total}")
+
+inserted = 0
+skipped = 0
+failed = 0
+
+for i, sn_id in enumerate(sn_ids):
+    print(f"[{i+1}/{total}] Processing {sn_id}...")
+
     if M.exists(sn_id):
-        print(f"Object {sn_id} already exists in the database.")
+        print(f"  → skipped (already exists)")
+        skipped += 1
         continue
 
     try:
-        result = L.get_object(object_id=sn_id, lasair_added=False)
-        sn_obj = SuperNovaDiaObject.from_dict(result)
-        print(f"Inserting object {sn_id} into the database.")
+        result = fetch_object_with_retry(sn_id)
+        sn_obj = DiaObject.from_dict(result)
         M.insert(sn_obj)
-    except requests.exceptions.Timeout:
-        break
+        inserted += 1
+        print(f"  → inserted")
+    except Exception as e:
+        print(f"  → failed: {e}")
+        failed += 1
 
+print(f"\nDone. inserted={inserted}, skipped={skipped}, failed={failed}")
