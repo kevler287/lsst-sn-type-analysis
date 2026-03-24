@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Any
 
 class DiaSource(BaseModel):
     diaSourceId: int = Field(description="diaSourceId or diaForcedSourceId")
@@ -8,13 +8,11 @@ class DiaSource(BaseModel):
     ra: float
     decl: float
     detector: int
-    band: str = Field(description="Filter band this source was observed with")
+    band: Any = Field(description="Filter band this source was observed with")
     psfFlux: float = Field(description="PSF weighted sum of all pixel values inside the aperture radius")
     psfFluxErr: float = Field(description="Estimated uncertainty of psfFlux")
     scienceFlux: float
     scienceFluxErr: float
-    timeProcessedMjdTai: float
-    timeWithdrawnMjdTai: Optional[float] = None
     visit: int
 
     #____________________BELOW IS ONLY SET WHEN isForced=False_________________________________
@@ -148,3 +146,13 @@ class DiaSource(BaseModel):
     xErr: Optional[float] = None
     y: Optional[float] = None
     yErr: Optional[float] = None
+
+    @classmethod
+    def from_alerce(cls, data: dict, is_forced: bool) -> 'DiaSource':
+        return cls(
+            diaSourceId=data.get("measurement_id"),
+            isForced=is_forced,
+            midpointMjdTai=data.get("mjd"),
+            decl=data.get("dec"),
+            **data
+        )
