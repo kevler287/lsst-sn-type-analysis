@@ -44,3 +44,19 @@ in the light curve — instead a faster, smoother decline similar to Ia but typi
 fainter and more irregular. Ib and Ic are difficult to distinguish photometrically
 without spectra. Like Type II, they only occur in star-forming environments, which
 makes host galaxy properties a potential discriminator against Type Ia.
+
+## Next Steps
+
+1. Get labeled data: According to my research the Transient Name Server (TNS) holds
+the SN type for SN objects. This is the foundation of all analysis before starting
+into LSST / ZTF data. Once this is done a connection between tns_name and diaObjectId
+must be established to enrich the labeled TNS data with the surveys data.
+
+2. Feature baseline: Find a core set of features which is available for most of the SNs.
+
+3. The inversion of this feature set must be features which where not yet used for
+SN type classification (probably lsst data)
+3a. If the amount of left features is too low for analysis the baseline will be used
+to train a classifier. This classifier is then used to classify yet untyped SNs for
+higher feature quality.
+
