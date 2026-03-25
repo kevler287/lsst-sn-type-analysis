@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from models.dia_source import DiaSource
+from archive.dia_source import DiaSource
 from pydantic import BaseModel, Field
 from typing import Optional, List
 

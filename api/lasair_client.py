@@ -18,32 +18,6 @@ class LasairClient:
         self.token = token
         self.base_url = base_url.rstrip('/')
         self.headers = {'Authorization': f'Token {self.token}'}
-
-    def cone_search(self, ra, dec, radius=100, request_type='all'):
-        """
-        Perform a cone search to find astronomical transients near specific coordinates.
-
-        Args:
-            ra (float): Right Ascension in decimal degrees (0 to 360).
-            dec (float): Declination in decimal degrees (-90 to +90).
-            radius (float): Search radius in arcseconds (max 1000).
-            request_type (str): Type of data to return ('all' or 'count').
-
-        Returns:
-            list: A list of dictionaries containing alert data or object IDs.
-        
-        Raises:
-            Exception: If the server returns a non-200 status code.
-        """
-        endpoint = f"{self.base_url}/cone/"
-        params = {
-            'ra': ra,
-            'dec': dec,
-            'radius': radius,
-            'requestType': request_type
-        }
-        
-        return self._make_request("GET", endpoint, params=params)
         
     def query(self, selected, tables, conditions, limit=1000, offset=0):
         """
