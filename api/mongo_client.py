@@ -12,6 +12,16 @@ class LSSTMongoClient:
 
     def exists(self, collection: str, id: int) -> bool:
         return self.database[collection].count_documents({"_id": id}) > 0
+    
+    def get_all(self, collection: str) -> list:
+        return list(self.database[collection].find())
+    
+    def count_by(self, collection: str, field: str) -> dict:
+        pipeline = [
+            {"$sortByCount": f"${field}"}
+        ]
+        result = self.database[collection].aggregate(pipeline)
+        return {doc["_id"]: doc["count"] for doc in result}
 
     def close(self):
         self.client.close()
