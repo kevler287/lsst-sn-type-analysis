@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from models.dia_object import DiaObject
+from archive.dia_object import DiaObject
 
 def plot_light_curve(obj: DiaObject) -> None:
     sources = sorted(obj.sources, key=lambda s: s.midpointMjdTai)
