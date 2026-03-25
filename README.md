@@ -35,7 +35,7 @@ makes host galaxy properties a potential discriminator against Type Ia.
 
 ## Steps
 
-### Get labeled data: 
+### 1. Get labeled data from TNS
 According to my research the Transient Name Server (TNS) holds
 the SN type for SN objects. This is the foundation of all analysis before starting
 into LSST / ZTF data. Labeled data needs to be fetch and stored locally in MongoDB.
@@ -79,11 +79,11 @@ Last update: 2026-03-25
 
 > **_NOTE:_** Well, TNS seems to be very specific with the SN types. I don't know if I will group them later on or leave as is.
 
-### Build connection bwtween TNS data and survey data
+### 2. Build connection between TNS data and survey data
 Once this is done a connection between tns_name and diaObjectId
 must be established to enrich the labeled TNS data with the surveys data.
 
-### Feature analysis:
+### 3. Feature analysis
 - How much data can be gathered per SN type?
 - Are there features which are available for most of the SN?
 - Do they differ to the set of known features for SN type classification?
