@@ -1,25 +1,13 @@
 # LSST Supernova Analysis
 
-This project explores supernova data from the Rubin Observatory's LSST survey
-to characterize different supernova types and build a classification pipeline —
+This project analyzes supernova data from the Rubin Observatory's LSST survey
+to discover previously unknown features that discriminate between supernova types —
 driven by the data itself rather than prior astrophysical assumptions.
 
-The core idea is simple: given photometric light curves and host galaxy metadata
-from Lasair's alert broker, can we let statistics and machine learning reveal
-which parameters actually matter for distinguishing supernova types? Feature
-importance, clustering, and supervised classification will guide the analysis
-rather than hand-picked domain knowledge.
-
-The project is structured in three phases:
-
-1. **Exploration** — get a feel for the data, its coverage, quality, and limitations
-2. **Characterization** — identify which features discriminate between SN types
-3. **Classification** — build and evaluate a classifier on labeled TNS objects
-
-A potential fourth phase extends the analysis to host galaxy properties,
-investigating whether galaxy characteristics correlate with supernova type.
-
-Data is sourced from the Lasair LSST alert broker and stored locally in MongoDB.
+Data is aggregated from multiple sources: photometric light curves and host galaxy
+metadata from the Lasair alert broker, spectroscopic classifications from the
+Transient Name Server (TNS), and auxiliary catalogues such as NED. All data is
+stored locally in MongoDB for offline analysis.
 
 ## Supernova Types
 
@@ -49,14 +37,15 @@ makes host galaxy properties a potential discriminator against Type Ia.
 
 1. Get labeled data: According to my research the Transient Name Server (TNS) holds
 the SN type for SN objects. This is the foundation of all analysis before starting
-into LSST / ZTF data. Once this is done a connection between tns_name and diaObjectId
+into LSST / ZTF data. Labeled data needs to be fetch and stored locally in MongoDB
+
+2. Once this is done a connection between tns_name and diaObjectId
 must be established to enrich the labeled TNS data with the surveys data.
 
-2. Feature baseline: Find a core set of features which is available for most of the SNs.
-
-3. The inversion of this feature set must be features which where not yet used for
-SN type classification (probably lsst data)
-3a. If the amount of left features is too low for analysis the baseline will be used
-to train a classifier. This classifier is then used to classify yet untyped SNs for
-higher feature quality.
-
+3. Feature analysis:
+- How much data can be gathered per SN type?
+- Are there features which are available for most of the SN?
+- Do they differ to the set of known features for SN type classification?
+- Can SN objects without type class in TNS be classified?
+- Can features from LSST which are probably not available for all labeled data
+characterize SN type aswell?
