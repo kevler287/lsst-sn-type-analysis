@@ -33,11 +33,50 @@ fainter and more irregular. Ib and Ic are difficult to distinguish photometrical
 without spectra. Like Type II, they only occur in star-forming environments, which
 makes host galaxy properties a potential discriminator against Type Ia.
 
-## Next Steps
+## Steps
 
 1. Get labeled data: According to my research the Transient Name Server (TNS) holds
 the SN type for SN objects. This is the foundation of all analysis before starting
-into LSST / ZTF data. Labeled data needs to be fetch and stored locally in MongoDB
+into LSST / ZTF data. Labeled data needs to be fetch and stored locally in MongoDB.
+
+Last update: 2026-03-25
+
+| SN Type | Count |
+|---|---:|
+| SN Ia | 12173 |
+| SN II | 2935 |
+| SN IIn | 524 |
+| SN Ia-91T-like | 470 |
+| SN Ic | 409 |
+| SN Ib | 325 |
+| SN IIP | 313 |
+| SN IIb | 294 |
+| SLSN-I | 217 |
+| SN Ic-BL | 177 |
+| SN Ia-91bg-like | 162 |
+| SLSN-II | 114 |
+| SN Ia-pec | 99 |
+| SN | 87 |
+| SN Ib/c | 82 |
+| SN Ibn | 71 |
+| SN Iax[02cx-like] | 63 |
+| SN I | 60 |
+| SN Ia-CSM | 43 |
+| SN Ib-pec | 17 |
+| SN Ia-SC | 17 |
+| SN II-pec | 16 |
+| SN Ib-Ca-rich | 12 |
+| SN Icn | 7 |
+| SN IIn-pec | 5 |
+| SN IIL | 3 |
+| SN Ic-pec | 3 |
+| SN Ibn/Icn | 2 |
+| SN Ia-Ca-rich | 1 |
+| SN Ic-Ca-rich | 1 |
+| SN Ien | 1 |
+| **Total** | **18703** |
+
+> **_NOTE:_** Well, TNS seems to be very specific with the SN types. I don't know if I will group them later on or leave as is.
 
 2. Once this is done a connection between tns_name and diaObjectId
 must be established to enrich the labeled TNS data with the surveys data.
