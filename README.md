@@ -80,8 +80,20 @@ Last update: 2026-03-25
 > **_NOTE:_** Well, TNS seems to be very specific with the SN types. I don't know if I will group them later on or leave as is.
 
 ### 2. Build connection between TNS data and survey data
-Once this is done a connection between tns_name and diaObjectId
-must be established to enrich the labeled TNS data with the surveys data.
+Once this is done a connection between TNS entry and survey entries must be established to enrich the labeled TNS data with the surveys data. Survey entries are pulled from Lasair LSST broker. There a query filtered by sherlock classification == SN can be executed and the returned jsons may already contain a "tns_name". After fetching all SNe from TNS and from Lasair the results are poor. From almost 140k SNe from Lasair only 537 had "tns_name" set. 72 of the 537 are labeled as SN in TNS as well. I assume the missing 465 are not yet classified as SN in TNS.
+
+Last update: 2026-03-25
+
+| SN Type | Count |
+|---|---:|
+|SN Ia |45
+|SN II |21
+|SN I |1
+|SN Ic |1
+|SN Ia-91T-like |3
+|SN IIn |1
+
+> **_NOTE:_** With the current data a sufficient feature analysis cannot be done. I might use the ALeRCE broker aswell to also receive ZTF data.
 
 ### 3. Feature analysis
 - How much data can be gathered per SN type?
