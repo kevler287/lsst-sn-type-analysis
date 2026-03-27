@@ -80,25 +80,51 @@ Last update: 2026-03-25
 > **_NOTE:_** Well, TNS seems to be very specific with the SN types. I don't know if I will group them later on or leave as is.
 
 ### 2. Build connection between TNS data and survey data
-Once this is done a connection between TNS entry and survey entries must be established to enrich the labeled TNS data with the surveys data. Survey entries are pulled from Lasair LSST broker. There a query filtered by sherlock classification == SN can be executed and the returned jsons may already contain a "tns_name". After fetching all SNe from TNS and from Lasair the results are poor. From almost 140k SNe from Lasair only 537 had "tns_name" set. 72 of the 537 are labeled as SN in TNS as well. I assume the missing 465 are not yet classified as SN in TNS.
+Once this is done a connection between TNS entry and survey entries must be established to enrich the labeled TNS data with the surveys data. Survey entries are pulled from Lasair LSST broker and ALeRCE broker. From Lasair broker almost 140k of classifed SNe were pulled but only few are metnioned in TNS yet. From ALeRCE broker all the ZTF objects metnioned in tns.internal_names were pulled and stored locally in MongoDB.
 
 Last update: 2026-03-25
 
-| SN Type | Count |
-|---|---:|
-|SN Ia |45
-|SN II |21
-|SN I |1
-|SN Ic |1
-|SN Ia-91T-like |3
-|SN IIn |1
+| SN Type | TNS Count | ZTF Count (ALeRCE) | LSST Count (Lasair) |
+|---|---|---|---:|
+|SN Ia|12173|5836|17|6331|
+|SN II|2935|1449|5|1483|
+|SN IIn|524|243|1|280|
+|SN Ia-91T-like|470|200|1|270|
+|SN Ic|409|174|1|235|
+|SN Ib|325|154|0|171|
+|SN IIP|313|111|0|202|
+|SN IIb|294|151|0|143|
+|SLSN-I|217|124|0|93|
+|SN Ic-BL|177|85|0|92|
+|SN Ia-91bg-like|162|73|0|89|
+|SLSN-II|114|57|0|57|
+|SN Ia-pec|99|44|0|55|
+|SN|87|39|0|48|
+|SN Ib/c|82|40|0|42|
+|SN Ibn|71|36|0|35|
+|SN Iax[02cx-like]|63|31|0|32|
+|SN I|60|29|1|31|
+|SN Ia-CSM|43|25|0|18|
+|SN Ia-SC|17|15|0|2|
+|SN Ib-pec|17|8|0|9|
+|SN II-pec|16|11|0|5|
+|SN Ib-Ca-rich|12|9|0|3|
+|SN Icn|7|6|0|1|
+|SN IIn-pec|5|2|0|3|
+|SN Ic-pec|3|1|0|2|
+|SN IIL|3|0|0|3|
+|SN Ibn/Icn|2|2|0|0|
+|SN Ien|1|1|0|0|
+|SN Ia-Ca-rich|1|1|0|0|
+|SN Ic-Ca-rich|1|1|0|0|
 
-> **_NOTE:_** With the current data a sufficient feature analysis cannot be done. I might use the ALeRCE broker aswell to also receive ZTF data.
+> **_NOTE:_** 
 
 ### 3. Feature analysis
-- How much data can be gathered per SN type?
-- Are there features which are available for most of the SN?
-- Do they differ to the set of known features for SN type classification?
-- Can SN objects without type class in TNS be classified?
-- Can features from LSST which are probably not available for all labeled data
-characterize SN type aswell?
+With the current LSST data a sufficient feature analysis cannot be done. The idea now is to build a classifier from ZTF data, reconstruct the LSST data into ZTF structure so the classifer can also handle LSST data.
+
+Next Steps:
+- Define feature set from ZTF data (probably mix of numeric features and time series)
+- Ensure reconstructing features from LSST data
+- Group SNe types to ca. 5 targets
+- Build NN
