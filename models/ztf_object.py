@@ -70,3 +70,13 @@ class ZTFObject(BaseModel):
     forced_photometry: List[ZTFForcedPhotometry] = Field(default_factory=list, description="List of ZTF forced photometry for this object")
 
     model_config = {"populate_by_name": True}
+
+    def count_filter_ids(self, detections_list: list) -> dict:
+        filter_ids = {
+            1: 0,
+            2: 0,
+            3: 0,
+        }
+        for det in detections_list:
+            filter_ids[det.fid] += 1
+        return filter_ids

@@ -123,6 +123,13 @@ Last update: 2026-03-25
 ### 3. Feature analysis
 With the current LSST data a sufficient feature analysis cannot be done. The idea now is to build a classifier from ZTF data, reconstruct the LSST data into ZTF structure so the classifer can also handle LSST data.
 
+#### Time series data in TNS x ZTF crossmatches
+Most of the available data are lightcurves which form time series with different lengths. Classifier typically prefer a fixed set of features where the series gets either scaled, cut or filled with defaults. Before deciding for a strategy the variance of the available time series needs to be analysed. The below plot shows how many unique days an object got observed across all bands (filter ids) and across all detection types (detections, non detections & forced photometry).
+
+![LC Timeseries Length](plots/lc_timeseries_variance.png)
+
+*zero is filtered out due to huge spike (8000+) in i band (fid) across all observation types
+
 Next Steps:
 - Define feature set from ZTF data (probably mix of numeric features and time series)
 - Ensure reconstructing features from LSST data

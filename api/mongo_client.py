@@ -1,5 +1,8 @@
 from pymongo import MongoClient
 from pydantic import BaseModel
+from models.tns_object import TNSObject
+from models.lasair_object import LasairObject
+from models.ztf_object import ZTFObject
 
 class LSSTMongoClient:
     def __init__(self, uri: str = "mongodb://localhost:27017", db_name: str = "lsst-sn-type-analysis"):
@@ -25,6 +28,46 @@ class LSSTMongoClient:
         ]
         result = self.database[collection].aggregate(pipeline)
         return {doc["_id"]: doc["count"] for doc in result}
+    
+    def get_tns_ztf_crossmatches(self):
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "ztf_objects",
+                    "localField": "internal_names",
+                    "foreignField": "_id",
+                    "as": "crossmatches"
+                }
+            },
+            {
+                "$match": {
+                    "crossmatches.0": {"$exists": True}
+                }
+            },
+            {
+                "$unwind": "$crossmatches"
+            },
+            {
+                "$replaceRoot": {
+                    "newRoot": {
+                        "tns": "$$ROOT",
+                        "ztf": "$crossmatches"
+                    }
+                }
+            },
+            {
+                "$unset": "tns.crossmatches"
+            }
+        ]
+        results = self.database["tns_sn_objects"].aggregate(pipeline)
+
+        match_objects = []
+        for obj_tuple in results:
+            tns_json = obj_tuple["tns"]
+            ztf_json = obj_tuple["ztf"]
+            match_objects.append((TNSObject(**tns_json), ZTFObject(**ztf_json)))
+
+        return match_objects
 
     def close(self):
         self.client.close()
