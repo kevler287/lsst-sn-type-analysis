@@ -8,6 +8,10 @@ M = LSSTMongoClient(uri="mongodb://localhost:27017", db_name="lsst-sn-type-analy
 tuples: Tuple[TNSObject, ZTFObject] = M.get_tns_ztf_crossmatches()
 ztf_objects = [t[1] for t in tuples]
 
-lc_timeseries_variance.plot_lc_timeseries_length(ztf_objects=ztf_objects, fids=[1,2,3])
+frame = lc_timeseries_variance.analyze_lc_timeseries(ztf_objects=ztf_objects)
+# lc_timeseries_variance.print_statistics(lc_frame=frame)
+# lc_timeseries_variance.print_availability(lc_frame=frame)
+lc_timeseries_variance.plot_lc_timeseries_density(lc_frame=frame)
+lc_timeseries_variance.plot_lc_timeseries_span(lc_frame=frame)
 
 M.close()
