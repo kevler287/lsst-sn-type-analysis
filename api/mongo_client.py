@@ -13,6 +13,9 @@ class LSSTMongoClient:
     def exists(self, collection: str, id: int) -> bool:
         return self.database[collection].count_documents({"_id": id}) > 0
     
+    def get_object(self, collection: str, id: int) -> dict:
+        return self.database[collection].find_one({"_id": id})
+    
     def get_all(self, collection: str) -> list:
         return list(self.database[collection].find())
     
