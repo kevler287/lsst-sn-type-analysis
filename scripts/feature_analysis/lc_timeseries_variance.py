@@ -1,5 +1,5 @@
 from typing import List
-from models.ztf_object import ZTFObject
+from models.data_models.ztf_object import ZTFObject
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

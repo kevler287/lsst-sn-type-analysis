@@ -1,7 +1,7 @@
 from api.mongo_client import LSSTMongoClient
-from models.tns_object import TNSObject
+from models.data_models.tns_object import TNSObject
 from typing import Tuple
-from models.ztf_object import ZTFObject
+from models.data_models.ztf_object import ZTFObject
 from scripts.feature_analysis import lc_timeseries_variance
 
 M = LSSTMongoClient(uri="mongodb://localhost:27017", db_name="lsst-sn-type-analysis")

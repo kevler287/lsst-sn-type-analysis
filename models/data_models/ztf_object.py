@@ -1,5 +1,6 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field
+import numpy as np
 
 class ZTFNonDetection(BaseModel):
     mjd: float = Field(..., description="Modified Julian Date of observation")
@@ -80,3 +81,18 @@ class ZTFObject(BaseModel):
         for det in detections_list:
             filter_ids[det.fid] += 1
         return filter_ids
+    
+
+    def filter_detections(self, fid: int) -> List[ZTFDetection]:
+        return [d for d in self.detections if d.fid == fid and not d.dubious and d.rb > 0.3]
+    
+    def detections_grouped_by_day(self, fid: int) -> Dict[int, ZTFDetection]:
+        dets = self.detections_by_fid(fid)
+        groups = {}
+        for d in dets:
+            day = int(d.mjd)
+            if day not in groups:
+                groups[day] = []
+            groups[day].append(d)
+        return groups
+    
