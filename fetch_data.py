@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 from api.mongo_client import LSSTMongoClient
 from typing import List
-from models.data_models.tns_object import TNSObject, NamePrefix
+from models.tns_object import TNSObject, NamePrefix
 
 mongo_client = LSSTMongoClient()
 dotenv.load_dotenv()
@@ -41,7 +41,7 @@ def fetch_sne_from_tns():
 
 def fetch_sne_from_lasair():
     from api.lasair_client import LasairClient
-    from models.data_models.lasair_object import LasairObject
+    from models.lasair_object import LasairObject
 
     L = LasairClient(token=os.getenv("LASAIR_API_TOKEN"))
     LIMIT = 10000
@@ -76,7 +76,7 @@ def fetch_sne_from_lasair():
 
 def fetch_tns_crossmatches_from_alerce():
     from api.alerce_client import AlerceClient
-    from models.data_models.ztf_object import ZTFObject, ZTFDetection, ZTFNonDetection, ZTFForcedPhotometry
+    from models.ztf_object import ZTFObject, ZTFDetection, ZTFNonDetection, ZTFForcedPhotometry
 
     tns_objects = mongo_client.get_all("tns_sn_objects")
     tns_objects = [TNSObject(**obj) for obj in tns_objects]

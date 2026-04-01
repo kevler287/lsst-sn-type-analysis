@@ -1,9 +1,12 @@
+import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from typing import Optional
 from pydantic import BaseModel
-from models.data_models.tns_object import TNSObject
-from models.data_models.lasair_object import LasairObject
-from models.data_models.ztf_object import ZTFObject
+from models.tns_object import TNSObject
+from models.lasair_object import LasairObject
+from models.ztf_object import ZTFObject
 from api.alerce_client import AlerceClient
 from api.mongo_client import LSSTMongoClient
 from api.lasair_client import LasairClient

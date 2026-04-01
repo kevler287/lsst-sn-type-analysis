@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 from pydantic import BaseModel
-from models.data_models.tns_object import TNSObject
-from models.data_models.lasair_object import LasairObject
-from models.data_models.ztf_object import ZTFObject
+from models.tns_object import TNSObject
+from models.lasair_object import LasairObject
+from models.ztf_object import ZTFObject
 
 class LSSTMongoClient:
     def __init__(self, uri: str = "mongodb://localhost:27017", db_name: str = "lsst-sn-type-analysis"):

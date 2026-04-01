@@ -118,32 +118,6 @@ Last update: 2026-03-25
 |SN Ia-Ca-rich|1|1|0|0|
 |SN Ic-Ca-rich|1|1|0|0|
 
-> **_NOTE:_** 
-
 ### 3. Feature analysis
-With the current LSST data a sufficient feature analysis cannot be done. The idea now is to build a classifier from ZTF data, reconstruct the LSST data into ZTF structure so the classifer can also handle LSST data.
 
-#### Time series data in TNS x ZTF crossmatches (n=9067)
-Most of the available data are lightcurves which form time series with different lengths. Classifier typically prefer a fixed set of features where the series gets either scaled, cut or filled with defaults. Before deciding for a strategy the available time series need to be analysed in terms of duration and density. 
-The below plots show the duration/density distribution across all bands (filter ids) and across all detection types (detections, non detections & forced photometry).
-
-**Duration (duration between first and last observation)**
-![LC Timeseries Duration](plots/lc_timeseries_span.png)
-
-**Density (how many data points (days) in timeseries)**
-![LC Timeseries Density](plots/lc_timeseries_density.png)
-
-**Relative availability**
-| fid | detections | non detections | forced photometry |
-|---|---|---|---:|
-1 (g) |  95.136208 | 96.503805 | 44.832911 |
-2  (r) | 97.011139 | 96.779530 | 46.046101 |
-3   (i) | 6.804897 | 10.135657 | 11.062093 |
-
-Seems to be clear that the data for fid=3 (i band) is not sufficient for usage. Also the forced photometry is only available for less than half of the data. For fid=1 & fid=2 (g & r band) time series of 10 data points spanning \~30 days seems to be the best compromise.
-
-Next Steps:
-- Define feature set from ZTF data (probably mix of numeric features and time series)
-- Ensure reconstructing features from LSST data
-- Group SNe types to ca. 5 targets
-- Build NN
+> **_NOTE:_** since this is not straight forward I decided to create a diary kind of. Check notes.md files in ./diary/ for further details.

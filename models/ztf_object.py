@@ -87,7 +87,7 @@ class ZTFObject(BaseModel):
         return [d for d in self.detections if d.fid == fid and not d.dubious and d.rb > 0.3]
     
     def detections_grouped_by_day(self, fid: int) -> Dict[int, ZTFDetection]:
-        dets = self.detections_by_fid(fid)
+        dets = self.filter_detections(fid)
         groups = {}
         for d in dets:
             day = int(d.mjd)

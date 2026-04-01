@@ -1,8 +1,14 @@
-from typing import List
-from models.data_models.ztf_object import ZTFObject
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from typing import List, Tuple
+from models.ztf_object import ZTFObject
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from api.mongo_client import LSSTMongoClient
+from models.tns_object import TNSObject
 
 fid_labels = {1: "g", 2: "r", 3: "i"}
 colors = ["#4CAF50", "#F44336", "#9C27B0"]
@@ -62,7 +68,7 @@ def _prepare_x(lc_frame: pd.DataFrame, columns: list, filter_0: bool = True):
         all_x = [x for x in all_x if x > 0]
     return np.asarray(all_x)
 
-def plot_lc_timeseries_density(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0: bool = True):
+def plot_observation_count(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0: bool = True):
 
     fig, axes = plt.subplots(3, 1, figsize=(12, 15))
     columns = ["n_det", "n_non_det", "n_fp"]
@@ -84,10 +90,10 @@ def plot_lc_timeseries_density(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0:
 
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.4)
-    plt.savefig("plots/lc_timeseries_density.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"{os.path.dirname(os.path.abspath(__file__))}/observation_count.png", dpi=150, bbox_inches="tight")
     plt.show()
 
-def plot_lc_timeseries_span(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0: bool = True):
+def plot_observation_span(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0: bool = True):
     fig, axes = plt.subplots(3, 1, figsize=(12, 15))
     columns = ["d_det", "d_non_det", "d_fp"]
     x = _prepare_x(lc_frame, columns, filter_0)
@@ -107,5 +113,17 @@ def plot_lc_timeseries_span(lc_frame: pd.DataFrame, fids=[1, 2, 3], filter_0: bo
 
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.4)
-    plt.savefig("plots/lc_timeseries_span.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"{os.path.dirname(os.path.abspath(__file__))}/observation_span.png", dpi=150, bbox_inches="tight")
     plt.show()
+
+M = LSSTMongoClient(uri="mongodb://localhost:27017", db_name="lsst-sn-type-analysis")
+tuples: Tuple[TNSObject, ZTFObject] = M.get_tns_ztf_crossmatches()
+ztf_objects = [t[1] for t in tuples]
+
+frame = analyze_lc_timeseries(ztf_objects=ztf_objects)
+print_statistics(lc_frame=frame)
+print_availability(lc_frame=frame)
+plot_observation_count(lc_frame=frame)
+plot_observation_span(lc_frame=frame)
+
+M.close()
